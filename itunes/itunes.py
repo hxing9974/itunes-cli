@@ -1,3 +1,5 @@
+#!/usr/bin/env python2.7
+# -*- coding: utf-8 -*-
 import sys
 import argparse
 from appscript import app, k
@@ -93,7 +95,7 @@ def play(*query, **kwargs):
             index = int(index)
         
         if index < 0:
-            print "Invalid index", index
+            print("Invalid index", index)
             return
     
     if not query:
@@ -103,11 +105,11 @@ def play(*query, **kwargs):
         matches = do_query(query, songs, artists, albums, playlists, library)
         
         if matches is None:
-            print "No matches found"
+            print("No matches found")
             if not library:
-                print '(Searching current playlist "{}". ' \
+                print('(Searching current playlist "{}". ' \
                     'Did you mean to search the whole library? Try --library/-l)' \
-                    .format(iTunes.current_playlist.name())
+                    .format(iTunes.current_playlist.name()))
             return
         
         if playlists:
@@ -116,16 +118,16 @@ def play(*query, **kwargs):
                 if index is None:
                     index = 0
                 if index >= len(matches):
-                    print "No playlist at index", index
+                    print("No playlist at index", index)
                 else:
                     name = list(matches)[index]
-                    print 'Playing playlist "{}"'.format(name)
+                    print('Playing playlist "{}"'.format(name))
                     iTunes.user_playlists[name].play()
             else:
-                print "More than one result. "\
-                    "(Try a better query, or specify an index using -i/--index):"
+                print("More than one result. "\
+                    "(Try a more specific query, or specify an index using -i/--index):")
                 for i, name in enumerate(matches):
-                    print "{:<5} {}".format(i, name)
+                    print("{:<5} {}".format(i, name))
             return
         
         where = get_where(songs, artists, albums)        
@@ -138,8 +140,8 @@ def play(*query, **kwargs):
         
         def _play(result):
             if not quiet:
-                print 'Playing "{}" by "{}" on "{}"'.format(result.name.get(),
-                        result.artist.get(), result.album.get())
+                print('Playing "{}" by "{}" on "{}"'.format(result.name.get(),
+                        result.artist.get(), result.album.get()))
             result.play()
         
         def _play_all(results):
@@ -157,7 +159,7 @@ def play(*query, **kwargs):
             playQueue.play()
         
         if len(results) == 0:
-            print "No results"
+            print("No results")
             return
         
         if len(results) == 1:
@@ -169,11 +171,11 @@ def play(*query, **kwargs):
                     if index < len(results):
                         _play(results[index])
                     else:
-                        print "No song at index", index
+                        print("No song at index", index)
                 elif index == 'all':
                     _play_all(results)
                 else:
-                    print "Invalid index", index
+                    print("Invalid index", index)
                 return
             
             table = []
@@ -193,14 +195,14 @@ def play(*query, **kwargs):
             
             if artists and len(artist_set) == 1:
                 if not quiet:
-                    print "Queuing music by", iter(artist_set).next()
+                    print("Queuing music by", iter(artist_set).next())
                 _play_all(results)
                 return
             
             if albums and len(album_set) == 1:
                 if not quiet:
                     anysong = results[0]
-                    print "Queuing music on", anysong.album(), "by", anysong.artist()
+                    print("Queuing music on", anysong.album(), "by", anysong.artist())
                 _play_all(results)
                 return
             
@@ -212,10 +214,10 @@ def play(*query, **kwargs):
                 _play(results[index])
             else:
                 fmt = ('| {{:<7}} | ' + '{{:<{}}} | '*3).format(*longest)
-                print "More than one result. " \
-                      "(Try a better query, or specify an index using -i/--index):"
-                print fmt.format('index', 'name', 'artist', 'album')
-                print fmt.format(*map(lambda x: '-'*x, [7]+longest))
+                print("More than one result. " \
+                      "(Try a better query, or specify an index using -i/--index):")
+                print(fmt.format('index', 'name', 'artist', 'album'))
+                print(fmt.format(*map(lambda x: '-'*x, [7]+longest)))
                 for (i, song) in enumerate(results):
                     name = song.name.get()
                     artist = song.artist.get()
@@ -225,52 +227,52 @@ def play(*query, **kwargs):
                     if len(artist) > longest[1]: artist = artist[:longest[1]-3] + '...'
                     if len(album)  > longest[2]: album  = album[:longest[2]-3]  + '...'
                     
-                    print fmt.format(i, name, artist, album)
+                    print(fmt.format(i, name, artist, album))
 
 def info(*args, **kwargs):
     """Implementation of the "info" command."""
     
     state = iTunes.player_state()
     if state == k.stopped:
-        print "iTunes is not playing."
+        print("iTunes is not playing.")
         return
     if state == k.playing:
-        print "iTunes is playing."
+        print("iTunes is playing.")
     elif state == k.paused:
-        print "iTunes is paused."
+        print("iTunes is paused.")
     else:
-        print "iTunes is in an unknown state", state
+        print("iTunes is in an unknown state", state)
     try:
-        print "Shuffling is {}".format("on" if is_shuffling() else "off")
+        print("Shuffling is {}".format("on" if is_shuffling() else "off"))
     except:
-        print "Cannot determine shuffling status."
-    print
+        print("Cannot determine shuffling status.")
+    print("")
     
     try:
         playlist = iTunes.current_playlist()
         if playlist == iTunes.playlists['Library']():
-            print "Playing entire library."
+            print("Playing entire library.")
         elif playlist == playQueue():
-            print "Playing queued songs."
+            print("Playing queued songs.")
         else:
-            print "Playing playlist:", playlist.name()
+            print("Playing playlist:", playlist.name())
     except:
-        print "Cannot determine which playlist is playing."
+        print("Cannot determine which playlist is playing.")
     
     try:
         track = iTunes.current_track()
         pos = iTunes.player_position()
         
-        print "Current Track:"
-        print "\tTitle:  ", track.name()
-        print "\tArtist: ", track.artist()
-        print "\tAlbum:  ", track.album()
-        print "\tRating: ", "*" * (track.rating()//20)
-        print
-        print make_pbar(pos, track.duration())
+        print("Current Track:")
+        print("\tTitle:  ", track.name())
+        print("\tArtist: ", track.artist())
+        print("\tAlbum:  ", track.album())
+        print("\tRating: ", "*" * (track.rating()//20))
+        print("")
+        print(make_pbar(pos, track.duration()))
     except:
-        print "Can't get current track."
-    print
+        print("Can't get current track.")
+    print("")
 
 def make_pbar(curr, total):
     MAX = 50
@@ -282,16 +284,16 @@ def make_pbar(curr, total):
 
 def list_queue(*args, **kwargs):
     if iTunes.current_playlist() != playQueue():
-        print "Not playing from queue; only playing a single song."
-        print "(Want information about the song? Try the 'info' command)"
+        print("Not playing from queue; only playing a single song.")
+        print("(Want information about the song? Try the 'info' command)")
     else:
         playing = iTunes.current_track()
         for song in playQueue.tracks():
             if song == playing:
-                print " > ",
+                print(" > ",)
             else:
-                print "   ",
-            print song.name()
+                print("   ",)
+            print(song.name())
 
 def parse_seek(s):
     """Translates a seek command to a player position.
@@ -330,12 +332,12 @@ def parse_seek(s):
 
 def seek(*args, **kwargs):
     if len(args) < 1:
-        print "You haven't specified how much to seek by or where to seek to."
-        print "For example:"
-        print "   itunes seek +10   (seek 10 seconds forward)"
-        print "   itunes seek -1:10 (seek 1 minute and 10 seconds back)"
-        print "   itunes seek 2:35  (seek to 2 minutes and 35 seconds in)"
-        print "(Looking for the current seek time? Try the 'info' command)"
+        print("You haven't specified how much to seek by or where to seek to.")
+        print("For example:")
+        print("   itunes seek +10   (seek 10 seconds forward)")
+        print("   itunes seek -1:10 (seek 1 minute and 10 seconds back)")
+        print("   itunes seek 2:35  (seek to 2 minutes and 35 seconds in)")
+        print("(Looking for the current seek time? Try the 'info' command)")
     else:
         iTunes.player_position.set(parse_seek(args[0]))
 
@@ -351,7 +353,7 @@ commands = {
 }
 
 def main():
-    parser = argparse.ArgumentParser(description='Command line querying interface to control iTunes on Mac OS X')
+    parser = argparse.ArgumentParser(description='Command line querying interface to control iTunes on macOS')
     parser.add_argument('command', default='play')
     parser.add_argument('--index', '-i', type=str)
     parser.add_argument('--artists', '-a', action='store_true')
@@ -373,7 +375,7 @@ def main():
         if len(matches) == 1:
             args['command'] = iter(matches).next()
         elif len(matches) > 1:
-            print "Command '{}' is ambiguous (could be any of {})".format(args['command'], ", ".join(matches))
+            print("Command '{}' is ambiguous (could be any of {})".format(args['command'], ", ".join(matches)))
             return
         else:
             args['query'].insert(0, args['command'])
@@ -383,3 +385,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

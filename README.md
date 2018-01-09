@@ -1,6 +1,10 @@
 # itunes-cli
 
-A command line interface to iTunes for Mac OS X, written in Python.
+A command line interface to iTunes for macOS, written in Python 2.7.
+
+## What's New
+- Non-ASCII song/band names are now supported
+- Python 2 requirement is now explicit
 
 ## Setup
 
